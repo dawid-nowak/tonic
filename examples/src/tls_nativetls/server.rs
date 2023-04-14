@@ -46,39 +46,37 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let http = Http::new();
     
 
-    loop{
-	let (socket, remote_addr) = listener.accept().await?;
-	let mut http = http.clone();
-     	http.http2_only(false);
-     	http.http1_only(false);
-	let svc = svc.clone();
-	println!("accept connection from {}", remote_addr);
+    // loop{
+    // 	let (socket, remote_addr) = listener.accept().await?;
+    // 	let mut http = http.clone();
+    //  	http.http2_only(false);
+    //  	http.http1_only(false);
+    // 	let svc = svc.clone();
+    // 	println!("accept connection from {}", remote_addr);
 	
-	tokio::spawn(async move {
-            http.serve_connection(socket, svc).await.unwrap();
-        });    
-	
-    }
-    // loop {
-    //     // Asynchronously wait for an inbound socket.
-    //     let (socket, remote_addr) = listener.accept().await?;
-    //     let tls_acceptor = tls_acceptor.clone();
-	
-    // 	let http = http.clone();
-    // 	http.http2_only(false);
-    // 	http.http1_only(false);
-	
-    //     let svc = svc.clone();
-    //     println!("accept connection from {}", remote_addr);
-	
-    //     tokio::spawn(async move {
-    //         // Accept the TLS connection.
-    //         let tls_stream = tls_acceptor.accept(socket).await.expect("accept error");
-    //         // In a loop, read data from the socket and write the data back.
-    //         http.serve_connection(tls_stream, svc).await.unwrap();
-
+    // 	tokio::spawn(async move {
+    //         http.serve_connection(socket, svc).await.unwrap();
     //     });    
+	
     // }
+    
+    loop {
+        // Asynchronously wait for an inbound socket.
+        let (socket, remote_addr) = listener.accept().await?;
+        let tls_acceptor = tls_acceptor.clone();	
+	let mut http = http.clone();
+	http.http2_only(true);	
+        let svc = svc.clone();
+        println!("accept connection from {}", remote_addr);
+	
+        tokio::spawn(async move {
+            // Accept the TLS connection.
+            let tls_stream = tls_acceptor.accept(socket).await.expect("accept error");
+            // In a loop, read data from the socket and write the data back.
+            http.serve_connection(tls_stream, svc).await.unwrap();
+
+        });    
+    }
 
     
 }
