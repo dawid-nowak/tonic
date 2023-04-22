@@ -4,19 +4,13 @@ pub mod pb {
 
 use hyper::server::conn::Http;
 use pb::{EchoRequest, EchoResponse};
-use std::sync::Arc;
 use tokio::net::TcpListener;
-
-use tokio_native_tls::TlsAcceptor;
-use tokio_native_tls::TlsConnector;
 
 use tokio_native_tls::native_tls;
 use std::fs::File;
 use std::io::Read;
 
 use tonic::{transport::Server, Request, Response, Status};
-use tower_http::ServiceBuilderExt;
-
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

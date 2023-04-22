@@ -85,6 +85,16 @@ path = "src/tls_nativetls/client.rs"
 required-features = ["tls-nativetls"]
 
 [[bin]]
+name = "tls-nativetls-clientserver"
+path = "src/tls_nativetls/client_as_server.rs"
+required-features = ["tls-nativetls"]
+
+[[bin]]
+name = "tls-nativetls-serverclient"
+path = "src/tls_nativetls/server_as_client.rs"
+required-features = ["tls-nativetls"]
+
+[[bin]]
 name = "tls-nativetls-server"
 path = "src/tls_nativetls/server.rs"
 required-features = ["tls-nativetls"]

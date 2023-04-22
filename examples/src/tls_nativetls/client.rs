@@ -10,8 +10,6 @@ use std::iter::FromIterator;
 use hyper::{client::HttpConnector, Uri};
 use pb::{echo_client::EchoClient, EchoRequest};
 use tokio_rustls::rustls::{ClientConfig, RootCertStore};
-use native_tls::{TlsConnector, TlsConnectorBuilder};
-use std::fs::File;
 use std::io::Read;
 
 
@@ -27,16 +25,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut http = HttpConnector::new();
     http.enforce_http(false);
 
-    let connector = tokio_native_tls::TlsConnector::from(native_tls::TlsConnector::builder()
+    let tls_connector = tokio_native_tls::TlsConnector::from(native_tls::TlsConnector::builder()
 		.add_root_certificate(roots)
 		.request_alpns(&["h2"]).build().unwrap());
     
-    let connector = hyper_tls::HttpsConnector::from((http,connector));
+    let connector = hyper_tls::HttpsConnector::from((http,tls_connector));
         
     let client = hyper::Client::builder().http2_only(true).build(connector);
     
     let uri = Uri::from_static("https://example.com");
     let uri = Uri::from_static("https://[::1]:50051");
+
+    
+ 
+    
     let mut client = EchoClient::with_origin(client, uri);
 
     let request = tonic::Request::new(EchoRequest {
@@ -49,3 +51,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
